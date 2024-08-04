@@ -64,29 +64,10 @@ def get_salary(job):
        salary = salary[0]
    return salary
 
-
-# functions to extract job type
-def get_job_type(job):
-   try:
-       job_type = job.xpath('./descendant::div[@class="metadata"]/div/text()')[0]
-   except Exception as e:
-       job_type = 'Not available'
-   return job_type
-
-
-# functions to extract job rating
-def get_rating(job):
-   try:
-       rating = job.xpath('./descendant::span[@class="ratingNumber"]/span/text()')[0]
-   except Exception as e:
-       rating = 'Not available'
-   return rating
-
-
 # functions to extract job description
 def get_job_desc(job):
    try:
-       job_desc = job.xpath('./descendant::div[@class="job-snippet"]/ul/li/text()')
+       job_desc = job.xpath('./descendant::ul[@style="list-style-type:circle;margin-top: 0px;margin-bottom: 0px;padding-left:20px;"]/li/text()')
    except Exception as e:
        job_desc = ['Not available']
    if job_desc:
@@ -121,19 +102,18 @@ if __name__ == "__main__":
     jobs = page_dom.xpath('//div[@class="job_seen_beacon"]')
     with open(f'indeed{args.page}.csv', 'w') as csvFile:
         csvWriter = csv.writer(csvFile)
-        csvWriter.writerow(['Job Title', 'Company Name', 'Company Location', 'Salary', 'Job Type', 'Job Rating', 'Job Description', 'Job Link'])
+        csvWriter.writerow(['Job Title', 'Company Name', 'Company Location', 'Salary', 'Job Type', 'Job Description', 'Job Link'])
         for job in jobs:
             job_link = base_url + get_job_link(job)
             job_title = get_job_title(job)
             company_name = get_company_name(job)
             company_location = get_company_location(job)
             salary = get_salary(job)
-            job_type = get_job_type(job)
-            rating = get_rating(job)
+            job_type = jobType
             job_desc = get_job_desc(job)
-            record = [job_title, company_name, company_location, salary, job_type, rating, job_desc, job_link]
+            record = [job_title, company_name, company_location, salary, job_type, job_desc, job_link]
             csvWriter.writerow(record)
     csvFile.close()
-
     driver.quit()
     print("Successfully ended Script")
+
