@@ -100,7 +100,7 @@ if __name__ == "__main__":
         url += '&sc=0kf%3Ajt%28temporary%29%3B'
     page_dom = get_dom(url)
     jobs = page_dom.xpath('//div[@class="job_seen_beacon"]')
-    with open(f'indeed{args.page}.csv', 'w') as csvFile:
+    with open(f'indeed{args.jobTitle.replace("+", "-")}-{args.location.replace("+", "-")}-{args.page}.csv', 'w') as csvFile:
         csvWriter = csv.writer(csvFile)
         csvWriter.writerow(['Job Title', 'Company Name', 'Company Location', 'Salary', 'Job Type', 'Job Description', 'Job Link'])
         for job in jobs:
