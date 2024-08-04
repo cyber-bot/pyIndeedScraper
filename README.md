@@ -11,9 +11,9 @@ pip install requirements.txt
 
 ## Usage
 
-For Example, lets scrape Data for Data Scientist Jobs in New York from the Second Page on Indeed. For Spaces, use the + Sign as shown below. Page is optional, by default it will be 1.
+For Example, lets scrape Data for Data Scientist Jobs in New York from the Second Page on Indeed that are Full Time Positions. For Spaces, use the + Sign as shown below. Page is optional, by default it will be 1.
 ```bash
-python main.py -jobTitle Data+Scientist -location New+York -page 2
+python main.py -jobTitle Data+Scientist -location New+York -page 2 -jobtype fulltime
 ```
 
 ## Contributing

@@ -34,7 +34,7 @@ def get_job_title(job):
 # functions to extract the company name
 def get_company_name(job):
    try:
-       company_name = job.xpath('./descendant::span[@class="companyName"]/text()')[0]
+       company_name = job.xpath('./descendant::span[@data-testid="company-name"]/text()')[0]
    except Exception as e:
        company_name = 'Not available'
    return company_name
@@ -43,7 +43,7 @@ def get_company_name(job):
 # functions to extract the company location
 def get_company_location(job):
    try:
-       company_location = job.xpath('./descendant::div[@class="companyLocation"]/text()')[0]
+       company_location = job.xpath('./descendant::div[@data-testid="text-location"]/text()')[0]
    except Exception as e:
        company_location = 'Not available'
    return company_location
@@ -102,9 +102,21 @@ if __name__ == "__main__":
     parser.add_argument('-jobTitle', required=True, help='Title for Job, Use + instead of Spaces.')
     parser.add_argument('-location', required=True, help='Location for Job, Use + instead of Spaces.')
     parser.add_argument('-page', default=1, help='Page to Scrape from')
+    parser.add_argument('-jobtype', required=True, choices=['fulltime', 'parttime', 'internship', 'contract', 'temporary'] ,help='Type of Job: Remote, Full Time, Part Time')
     args = parser.parse_args()
     base_url = "https://www.indeed.com"
     url = f"https://www.indeed.com/jobs?q={args.jobTitle}&l={args.location}&radius=35&start={args.page}"
+    jobType = args.jobtype
+    if jobType == 'fulltime':
+        url += '&sc=0kf%3Ajt%28fulltime%29%3B'
+    elif jobType == 'parttime':
+        url += '&sc=0kf%3Ajt%28parttime%29%3B'
+    elif jobType == 'contract':
+        url += '&sc=0kf%3Ajt%28contract%29%3B'
+    elif jobType == 'internship':
+        url += '&sc=0kf%3Ajt%28internship%29%3B'
+    elif jobType == 'temporary':
+        url += '&sc=0kf%3Ajt%28temporary%29%3B'
     page_dom = get_dom(url)
     jobs = page_dom.xpath('//div[@class="job_seen_beacon"]')
     with open(f'indeed{args.page}.csv', 'w') as csvFile:
@@ -124,3 +136,4 @@ if __name__ == "__main__":
     csvFile.close()
 
     driver.quit()
+    print("Successfully ended Script")
