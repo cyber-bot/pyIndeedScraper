@@ -1,6 +1,8 @@
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from lxml import etree as et
+import argparse
+import csv
 
 driver = webdriver.Chrome()
 
@@ -93,21 +95,32 @@ def get_job_desc(job):
        job_desc = 'Not available'
    return job_desc
 
-base_url = "https://www.indeed.com"
-url = "https://www.indeed.com/jobs?q=Data+Scientist&l=New+York&radius=35&start=1"
-page_dom = get_dom(url)
-jobs = page_dom.xpath('//div[@class="job_seen_beacon"]')
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+                    prog='pyIndeedScraper',
+                    description='Scrape Indeed Jobs with Python using Selenium and Beautiful Soup.')
+    parser.add_argument('-jobTitle', required=True, help='Title for Job, Use + instead of Spaces.')
+    parser.add_argument('-location', required=True, help='Location for Job, Use + instead of Spaces.')
+    parser.add_argument('-page', default=1, help='Page to Scrape from')
+    args = parser.parse_args()
+    base_url = "https://www.indeed.com"
+    url = f"https://www.indeed.com/jobs?q={args.jobTitle}&l={args.location}&radius=35&start={args.page}"
+    page_dom = get_dom(url)
+    jobs = page_dom.xpath('//div[@class="job_seen_beacon"]')
+    with open(f'indeed{args.page}.csv', 'w') as csvFile:
+        csvWriter = csv.writer(csvFile)
+        csvWriter.writerow(['Job Title', 'Company Name', 'Company Location', 'Salary', 'Job Type', 'Job Rating', 'Job Description', 'Job Link'])
+        for job in jobs:
+            job_link = base_url + get_job_link(job)
+            job_title = get_job_title(job)
+            company_name = get_company_name(job)
+            company_location = get_company_location(job)
+            salary = get_salary(job)
+            job_type = get_job_type(job)
+            rating = get_rating(job)
+            job_desc = get_job_desc(job)
+            record = [job_title, company_name, company_location, salary, job_type, rating, job_desc, job_link]
+            csvWriter.writerow(record)
+    csvFile.close()
 
-for job in jobs:
-    job_link = base_url + get_job_link(job)
-    job_title = get_job_title(job)
-    company_name = get_company_name(job)
-    company_location = get_company_location(job)
-    salary = get_salary(job)
-    job_type = get_job_type(job)
-    rating = get_rating(job)
-    job_desc = get_job_desc(job)
-    record = [job_link, job_title, company_name, company_location, salary, job_type, rating, job_desc]
-    print(record)
-
-driver.quit()
+    driver.quit()
